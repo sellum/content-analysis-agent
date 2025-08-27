@@ -1,0 +1,14 @@
+apiVersion: dapr.io/v1alpha1
+kind: Configuration
+metadata:
+  name: content-analysis-config
+spec:
+  tracing:
+    samplingRate: "1"
+  mtls:
+    enabled: false
+  features:
+    - name: "Actor.Reentrancy"
+      enabled: true
+    - name: "Actor.IdleTimeout"
+      enabled: true
