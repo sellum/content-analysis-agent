@@ -1,0 +1,66 @@
+# Agent Configuration File
+# This file explicitly declares how to deploy agents from this repository
+# No complex detection logic needed - everything is user-defined
+
+version: "1.0"
+repository:
+  name: "content-analysis-agent"
+  description: "Content analysis agent with NLP capabilities"
+
+agents:
+  - name: "content-analyzer"
+    type: "durable_agent"  # durable_agent, agent, workflow
+    main_file: "services/content-analyzer/app.py"
+    class_name: "ContentAnalysisAgent"
+    port: 8005
+    replicas: 1
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+    
+    # Environment variables
+    env:
+      - name: "DEBUG"
+        value: "true"
+      - name: "DAPR_METRICS_PORT"
+        value: "59213"
+    
+    # Dapr configuration
+    dapr:
+      enabled: true
+      config_name: ""  # optional
+      unix_domain_socket: ""  # optional
+    
+    # Health check configuration
+    health_check:
+      path: "/status"
+      port: 8005
+    
+    # Service configuration
+    service:
+      type: "ClusterIP"
+      port: 8005
+      target_port: 8005
+
+# Build configuration
+build:
+  base_image: "python:3.12-slim"
+  python_version: "3.12"
+  install_system_deps: true
+  system_deps:
+    - "gcc"
+    - "build-essential"
+  
+# Registry configuration (can be overridden by deployment)
+registry:
+  image_name: "content-analyzer"
+  tag: "latest"
+
+# Dependencies (optional - for build optimization)
+dependencies:
+  - "requirements.txt"
+  - "services/content-analyzer/"
